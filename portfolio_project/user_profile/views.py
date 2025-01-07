@@ -36,9 +36,10 @@ def portfolio_list(request):
     return render(request, 'user_profile/portfolio_list.html', {'portfolios': portfolios})
 
 def portfolio_create(request):
-    form = PortfolioForm(request.POST or None)
-    if form.is_valid():
-        form.save()
+    if request.method == 'POST':
+        form = PortfolioForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
         return redirect('portfolio_list')
     else:
         form = PortfolioForm()
@@ -61,11 +62,15 @@ def project_list(request):
     projects = ProjectShowcase.objects.all()
     return render(request, 'user_profile/project_list.html', {'projects': projects})
 def project_create(request):
-    form = ProjectShowcaseForm(request.POST or None)
-    if form.is_valid():
-        form.save()
-        return redirect('project_list')
+    if request.method == 'POST':
+        form = ProjectShowcaseForm(request.POST, request.FILES)  # Include request.FILES
+        if form.is_valid():
+            form.save()
+            return redirect('project_list')
+    else:
+        form = ProjectShowcaseForm()
     return render(request, 'user_profile/project_form.html', {'form': form})
+
 
 def project_update(request, pk):
     project = get_object_or_404(ProjectShowcase, pk=pk)
